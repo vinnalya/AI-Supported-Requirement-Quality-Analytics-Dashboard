@@ -66,13 +66,7 @@ For this project I only use issues where `Type = 'Story'`. That gives about 31,0
    ```
 4. Download the TAWOS dump from the DOI link above. Import the `.sql` file into a MySQL database called `TAWOS`.
 5. Create a `.env` file in the project root with your MySQL credentials:
-   ```
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_USER=root
-   DB_PASSWORD=your-password
-   DB_NAME=TAWOS
-   ```
+
 6. Open the notebooks in VS Code and pick the `rqad` kernel.
 
 ## Progress
