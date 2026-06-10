@@ -218,3 +218,93 @@ Reference for the importance of acceptance criteria: Mike Cohn's "Conditions of 
 Interpretation: most teams in this dataset capture user stories as plain prose and rely on the team's shared understanding rather than written tests-of-done. From a QA perspective this is a serious gap. The team has no objective record of when a story is complete, which forces rework and ambiguity in sprint planning.
 
 Implication for the dashboard: a "missing acceptance criteria" tag will be one of the strongest weights in the quality score.
+
+
+
+
+## Findings from Notebook 05 (Rule-Based Scoring)
+
+### Finding 19. Half of the dataset scores Poor or Very Poor on the rule-based quality framework
+
+After applying the 5-dimension scoring framework (Cohn template, QUS criteria, INVEST principles) to all 31,394 stories, the score band distribution is:
+
+| Band | Stories | Share |
+|---|---:|---:|
+| Very good (4.0 to 5.0) | 246 | 0.8% |
+| Good (3.0 to 4.0) | 1,221 | 3.9% |
+| Average (2.0 to 3.0) | 14,360 | 45.7% |
+| Poor (1.0 to 2.0) | 11,570 | 36.9% |
+| Very poor (0.0 to 1.0) | 3,997 | 12.7% |
+
+Only 4.7% of stories reach Good or better. Nearly half (49.6%) fall into Poor or Very Poor.
+
+Reference for the bands: Challa et al. (2011), rescaled from 0-1 to 0-5.
+
+### Finding 20. Business value is the weakest dimension across the entire dataset
+
+Average scores per dimension (out of 5):
+
+| Dimension | Mean | Median |
+|---|---:|---:|
+| Business value | 0.94 | 1.00 |
+| Completeness | 1.77 | 2.00 |
+| Testability | 2.23 | 2.50 |
+| Clarity | 2.55 | 2.50 |
+| Scope risk (higher = lower risk) | 4.26 | 4.50 |
+
+This confirms Finding 9: less than 1% of stories explain "why" they exist. The classic "so that <reason>" clause from Cohn's template is almost universally missing.
+
+Scope risk is the strongest dimension because Story Point estimation discipline is reasonably high (about 70% of stories have an estimate, and large outliers are rare).
+
+### Finding 21. Only 12 stories pass all quality checks
+
+When grouping stories by issue tag count, only 12 out of 31,394 stories (0.04%) have zero issue tags. The most common issue tags reveal the systemic problems:
+
+| Tag | Stories | Share |
+|---|---:|---:|
+| missing_acceptance_criteria | 31,166 | 99.3% |
+| missing_reason | 30,110 | 95.9% |
+| weak_means | 29,471 | 93.9% |
+| weak_role | 28,383 | 90.4% |
+| has_implementation_hint | 10,647 | 33.9% |
+| missing_estimate | 9,661 | 30.8% |
+| non_fibonacci_estimate | 7,500 | 23.9% |
+| has_vague_words | 4,192 | 13.4% |
+| missing_description | 4,102 | 13.1% |
+| non_atomic | 2,973 | 9.5% |
+| high_scope_risk | 1,019 | 3.2% |
+| duplicate_in_project | 540 | 1.7% |
+| extreme_scope_risk | 75 | 0.2% |
+| markup_only | 35 | 0.1% |
+
+The top four tags relate to format. Together they confirm that classical Agile user story authoring is essentially absent from this dataset.
+
+Reference for the tag taxonomy: Lucassen et al. (2016) AQUSA tool and Yamani et al. (2025) LLM failure modes.
+
+### Finding 22. Project scores spread from 3.31 (Good) to 1.58 (Poor)
+
+Per-project average overall quality scores for projects with at least 100 stories:
+
+| Project | Stories | Avg score | Band |
+|---|---:|---:|---|
+| MongoDB Compass | 175 | 3.31 | Good |
+| Hyperledger Indy Node | 349 | 2.44 | Average |
+| DotNetNuke Platform | 402 | 2.44 | Average |
+| Spring XD | 2,593 | 2.18 | Average |
+| Sonatype Nexus | 243 | 2.12 | Average |
+| ...remainder Average or Poor... | | | |
+| Apache Usergrid | 805 | 1.58 | Poor |
+| Lsstcorp Data Management | 19,578 | 1.88 | Poor |
+
+Spring XD achieves a near-perfect scope_risk score of 4.90, reflecting its 100% Story Point coverage and Fibonacci discipline. MongoDB Compass leads on every dimension but with the smallest sample size (175 stories).
+
+Lsstcorp, which dominates the dataset by volume (62%), scores Poor on overall quality. This pulls the dataset average down.
+
+Implication for the dashboard: per-project scoring will be the primary view in Power BI, giving Scrum Masters a direct comparison.
+
+
+**Visual evidence (histogram):** The overall quality score distribution is bimodal. Two distinct clusters appear:
+1. A left cluster around 0.1 to 0.3 (about 3,000 stories) consisting of catastrophically broken stories, typically markup-only or completely empty.
+2. A central mass between 1.7 and 2.3 (about 16,000 stories) representing the typical case: missing template and acceptance criteria, but the basic text is there.
+
+Almost no stories score above 4.0. The distribution suggests two distinct quality regimes rather than a smooth gradient, which has implications for how dashboards present this data.
