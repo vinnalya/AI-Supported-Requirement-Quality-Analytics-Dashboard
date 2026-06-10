@@ -183,3 +183,61 @@ How I will use it: as a reference for the score interpretation bands in the dash
 ## Optional further reading (not directly used in this project)
 
 - Yan et al. (2017). *Automating Aggregation for Software Quality Modeling*. IEEE ICSME 2017. DOI: https://doi.org/10.1109/ICSME.2017.30. This paper uses a topic model (DPLSA) to learn aggregation weights from a benchmark of open source projects, removing the need for manual weights. It is more research oriented than the practical Squale approach and is left for future work in this project.
+
+## 9. Hashemi, Eisner, Rosset, Van Durme, Kedzie (2024). LLM-RUBRIC: A Multidimensional, Calibrated Approach to Automated Evaluation of Natural Language Texts.
+
+The methodological backbone for the AI-supported scoring in notebook 06.
+
+- Title: *LLM-RUBRIC: A Multidimensional, Calibrated Approach to Automated Evaluation of Natural Language Texts*
+- Authors: Helia Hashemi, Jason Eisner, Corby Rosset, Benjamin Van Durme, Chris Kedzie (Microsoft)
+- Venue: Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL 2024), pp. 13806 to 13834
+- DOI: https://aclanthology.org/2024.acl-long.745
+
+What I take from it:
+
+- The argument that naive LLM scoring is unreliable even though the LLM is highly capable. They show that a single LLM-as-judge correlates poorly with human judges, but combining the LLM's distribution over multiple rubric questions (calibrated against humans) gives strong correlation.
+- The use of a multi-dimensional rubric covering different evaluation criteria. This matches my 5-dimension framework in notebook 04 (clarity, completeness, testability, business value, scope risk).
+- The principle of asking each rubric question independently of the others, to avoid the LLM confounding its own responses. I will follow this in notebook 06.
+- Validation that 9 rubric questions can predict overall quality with RMSE less than 0.5 on a 1 to 4 scale, a 2x improvement over the uncalibrated baseline.
+
+How I will use it: as a justification for asking the LLM multiple specific questions per story (one per dimension or one per criterion) rather than a single "rate this story 1 to 5" question. This is the same multi-question approach I already used for rule-based scoring in notebook 05.
+
+## 10. Croxford et al. (2025). Automating Evaluation of AI Text Generation in Healthcare with LLM-as-a-Judge.
+
+The most direct precedent for what I will do in notebook 06: use a strong LLM to score multi-document summaries against a multi-attribute rubric, then validate against human judges.
+
+- Title: *Automating Evaluation of AI Text Generation in Healthcare with a Large Language Model (LLM)-as-a-Judge*
+- Authors: Emma Croxford, Yanjun Gao, Elliot First, Nicholas Pellegrino, Miranda Schnier, John Caskey, Madeline Oguss, Graham Wills, Guanhua Chen, Dmitriy Dligach, Matthew Churpek, Anoop Mayampurath, Frank Liao, Cherodeep Goswami, Karen Wong, Brian Patterson, Majid Afshar
+- Venue: medRxiv preprint, 2025
+- DOI: https://doi.org/10.1101/2025.04.22.25326219
+
+What I take from it:
+
+- They benchmark 8 LLMs as judges for clinical summary evaluation using the PDSQI-9 rubric (a 9-attribute scoring instrument similar in spirit to QUS).
+- Key result: GPT-o3-mini with 5-shot prompting achieved the highest intraclass correlation coefficient with human judges (ICC equal to 0.818). It completed each evaluation in about 22 seconds.
+- Reasoning models (GPT-o3-mini, DeepSeek R1) outperformed non-reasoning models (GPT-4o, Mixtral 8x22B) on evaluations that require advanced reasoning and domain expertise. This is relevant to my Cohn template and INVEST checks which require some reasoning.
+- Multi-agent frameworks did not consistently outperform a well-prompted single LLM judge, while costing more. I will start with single LLM judges in notebook 06.
+- Inter-rater reliability is the standard outcome metric: intraclass correlation coefficient (ICC), Krippendorff's alpha, Gwet's AC2. I will use these to compare my AI-supported scores to my rule-based scores from notebook 05.
+- Few-shot prompting (5 examples) and structured JSON output produced the most reliable results.
+
+How I will use it: as the direct template for the notebook 06 design. I will start with a single LLM judge using 5-shot prompting and structured JSON output, score a sample of my 31,394 stories, and report ICC and correlations against my rule-based scores from notebook 05.
+
+## 11. van Schaik and Pugh (2024). A Field Guide to Automatic Evaluation of LLM-Generated Summaries.
+
+Industry-oriented practical guidance for automatic evaluation, used as the sanity check framework for my evaluation suite.
+
+- Title: *A Field Guide to Automatic Evaluation of LLM-Generated Summaries*
+- Authors: Tempest van Schaik, Brittany Pugh (Microsoft)
+- Venue: Proceedings of the 47th International ACM SIGIR Conference on Research and Development in Information Retrieval (SIGIR 2024)
+- DOI: https://doi.org/10.1145/3626772.3661346
+
+What I take from it:
+
+- The principle of using a suite of metrics rather than a single metric. Each metric has weaknesses. I use rule-based scores (notebook 05) and will add AI-supported scores (notebook 06) as complementary signals.
+- The combination of standard metrics (ICC, correlation) with custom metrics designed for the specific task. My 5 quality dimensions are custom metrics in this sense.
+- The combination of LLM and non-LLM metrics. My rule-based scoring is non-LLM, while notebook 06 will add an LLM evaluator. Discrepancies between the two are themselves a useful signal.
+- The need to validate any custom evaluator. I will validate notebook 06's LLM scores by checking their correlation with notebook 05's rule-based scores on the same stories, and by spot checking the LLM's reasoning on hand-picked examples.
+- The cold start problem and the suggestion to use synthetic data carefully or repurpose existing datasets. In my case, the dataset is real Jira data, so this is less of a concern.
+- The challenge of distinguishing good from excellent. LLMs can saturate at the top of the scale. Using both rule-based and LLM-based scores together, and using multiple dimensions, helps mitigate this.
+
+How I will use it: as a checklist for the design of notebook 06. I will produce a suite of LLM scores (not just one), combine them with the rule-based scores from notebook 05, validate them against each other, and report disagreements as a signal worth investigating.
