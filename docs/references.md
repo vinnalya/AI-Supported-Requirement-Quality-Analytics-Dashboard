@@ -136,3 +136,50 @@ Key findings I rely on:
 - The review reports that generative AI is starting to appear in this space but is used in only one of the 26 studies. The Yamani et al. (2025) paper above is a recent example. This positions my notebook 06 in an active, under-explored area.
 
 How I will use it: as the literature-review backbone of the case study, to show that the framework choices (QUS plus INVEST) and the tooling choices (rule-based plus LLM-based) are consistent with the current state of the field.
+
+## 7. Mordal et al. (2012). Squale model for software quality metrics aggregation.
+
+The methodological backbone for the scoring framework in this project. Squale is a model that has been used in real industrial settings at Air France-KLM and Peugeot-Citroen since 2010.
+
+- Title: *Software quality metrics aggregation in industry*
+- Authors: Karine Mordal, Nicolas Anquetil, Jannik Laval, Alexander Serebrenik, Bogdan Vasilescu, Stéphane Ducasse
+- Journal: Journal of Software: Evolution and Process, vol. 25, issue 10, pp. 1117 to 1135 (October 2013)
+- DOI: https://doi.org/10.1002/smr.1558
+
+What I take from it:
+
+- The clear separation between composition (combining different metrics into a single quality interval) and aggregation (summarizing component-level results to system level). Notebook 03 did composition. Notebook 04 will do aggregation.
+- The argument that simple arithmetic mean hides bad components, with concrete industrial examples. This is exactly why I will not use plain averages in scoring.
+- The hard, medium, soft weighting scheme using lambda equals 30, 9, 3. This gives me a parameterised way to make the score more or less sensitive to bad components.
+- The aggregation function ISquale(x1, ..., xn) = minus log base lambda of the mean of lambda to the minus xi. It is proven to never give a result worse than the smallest input and never better than the arithmetic mean.
+- The "anti transfers principle" which guarantees that any improvement in component quality is reflected in the aggregated score. Plain averages and several econometric indices do not satisfy this.
+- A list of nine requirements that a good quality aggregation method should satisfy. I will use these as a checklist when designing my own scoring framework.
+
+How I will use it: as the direct reference for the aggregation step in notebook 05. The lambda based weighted average will be applied when combining per-story scores into per-project and overall scores.
+
+## 8. Challa et al. (2011). Fuzzy multi-criteria approach to integrated software quality evaluation.
+
+A reference for the multi-perspective scoring structure and the interpretation bands.
+
+- Title: *Integrated Software Quality Evaluation: A Fuzzy Multi-Criteria Approach*
+- Authors: Jagat Sesh Challa, Arindam Paul, Yogesh Dada, Venkatesh Nerella, Praveen Ranjan Srivastava, Ajit Pratap Singh
+- Journal: Journal of Information Processing Systems, vol. 7, no. 3 (September 2011), pp. 473 to 518
+- DOI: https://doi.org/10.3745/JIPS.2011.7.3.473
+
+What I take from it:
+
+- The idea of evaluating software quality from three perspectives: developer, user, and project manager. In this project I map these onto the dashboard audiences: Product Owner / Business Analyst, QA, and Scrum Master / Project Manager.
+- A four level hierarchical structure: metrics, then sub characteristics, then characteristics, then perspectives, then overall. This is the same pattern that Squale uses and that I follow in notebook 04.
+- An interpretation table for the final score, which I will adapt to a zero to five scale:
+  - Very Good: greater than 0.65 of the maximum
+  - Good: 0.5 to 0.65
+  - Average: 0.35 to 0.5
+  - Poor: 0.25 to 0.35
+  - Very Poor: less than 0.25
+- The use of weighted averages at each level. Combined with the Squale lambda weighting, this gives the scoring its sensitivity to bad components.
+
+How I will use it: as a reference for the score interpretation bands in the dashboard and the case study, and to justify the three perspective split in the Power BI dashboard.
+
+## Optional further reading (not directly used in this project)
+
+- Yan et al. (2017). *Automating Aggregation for Software Quality Modeling*. IEEE ICSME 2017. DOI: https://doi.org/10.1109/ICSME.2017.30. This paper uses a topic model (DPLSA) to learn aggregation weights from a benchmark of open source projects, removing the need for manual weights. It is more research oriented than the practical Squale approach and is left for future work in this project.
