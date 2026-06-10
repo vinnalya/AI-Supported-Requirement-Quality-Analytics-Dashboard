@@ -1,59 +1,71 @@
 # Analysis Decisions Log
 
-This document tracks the analysis decisions made during the project, the alternatives considered, and the rationale. Useful for the case study and for reviewers.
+This file tracks the choices I made while working on this project. For each choice it lists the options I considered and why I picked one. I write decisions down so I can explain them later in the case study and so a reviewer can audit my reasoning.
 
----
+## D1. Dataset choice: TAWOS instead of the raw Zenodo dump
 
-## D1 — Dataset choice: TAWOS over raw Zenodo dump
-**Considered:**
-- Zenodo Public Jira Dataset (raw 6.3 TB MongoDB dump, restricted access)
-- TAWOS v1.1 (4 GB MySQL dump, public, Apache 2.0 license)
+Options I considered:
+- The raw Zenodo Public Jira Dataset. It is about 6.3 TB and ships as a MongoDB dump. MongoDB is a NoSQL database that stores data as JSON like documents. Access is restricted.
+- TAWOS version 1.1. It is about 4 GB and ships as a MySQL dump. MySQL is a standard relational database. Apache 2.0 license, public.
 
-**Decision:** TAWOS.
-**Rationale:** TAWOS is the cleaned, structured derivative of the same Jira repositories. It is downloadable, ships with documentation, and is sized appropriately for a portfolio project (458K issues, ~4 GB). The raw Zenodo dump would require MongoDB setup, access requests, and storage we don't need.
+My choice: TAWOS.
 
----
+Reason: TAWOS is the cleaned, structured version of the same Jira projects. I can download it without applying for access, it has documentation, and the size fits a portfolio project (about 458,000 issues, 4 GB). The raw Zenodo dump would force me to install MongoDB, ask for permission, and use storage I do not need.
 
-## D2 — Storage: MySQL over SQLite or flat files
-**Decision:** MySQL 8.0 (matches TAWOS dump format).
-**Rationale:** TAWOS ships as a MySQL `.sql` dump. Importing into MySQL avoids data conversion losses. Also aligns with project plan Step 7 (SQL Database) and enables Power BI connectivity later.
+Source for the dataset: Tawosi et al. (2022), see `docs/references.md`.
 
----
+## D2. Storage: MySQL over SQLite or flat files
 
-## D3 — Filter strategy: `Type = 'Story'` only
-**Considered:**
-- (A) Strict: only `Story`
-- (B) Broad: Story + New Feature + Enhancement Request
-- (C) Including Improvement
+My choice: MySQL 8.0.
 
-**Decision:** Strict — only `Type = 'Story'` (31,394 records).
-**Rationale:** Project scope is *user-story* quality, not generic requirement quality. Mixing types would dilute analysis. Can revisit and broaden later if needed.
+Reason: TAWOS already ships as a MySQL `.sql` file. A dump is a text export of all tables. Importing this file directly into MySQL avoids any conversion step. It also matches the project plan, which says step 7 is to use a SQL database. Later on Power BI can connect to MySQL with no extra work.
 
----
+## D3. Filter strategy: only `Type = 'Story'`
 
-## D4 — Keep Lsstcorp despite dominance
-Lsstcorp Data Management contributes 62% of stories.
+Options I considered:
+- (A) Strict. Keep only rows where the Jira type is `Story`. This gives 31,394 rows.
+- (B) Broader. Story plus New Feature plus Enhancement Request.
+- (C) Even broader. Add Improvement too.
 
-**Considered:**
-- (A) Keep all, expose as filter in dashboard
-- (B) Cap Lsstcorp at 5,000 to balance
-- (C) Exclude Lsstcorp entirely
+My choice: A.
 
-**Decision:** (A) Keep all, make `Project_Name` a dashboard filter.
-**Rationale:** Discarding data is destructive. Capping introduces sampling bias. Making it filterable lets users see "with Lsstcorp" and "without Lsstcorp" views and judge the impact themselves.
+Reason: The project is about the quality of user stories, not the quality of any backlog item. Mixing types would water down the analysis. I can always come back later and add more types if I need more data.
 
----
+## D4. Keep Lsstcorp even though it dominates
 
-## D5 — Keep stories with missing Description
-Some 4,067 stories have no Description at all.
+One project, Lsstcorp Data Management, contributes 62 percent of all stories.
 
-**Decision:** Keep them in the dataset, do not drop.
-**Rationale:** Missing Description is itself a quality signal. Dropping these rows would erase exactly the kind of low-quality item we're trying to detect. They will receive low quality scores and contribute to "missing_description" issue counts.
+Options I considered:
+- Keep all rows and let the dashboard filter by project.
+- Cap Lsstcorp at 5,000 rows so it does not dominate.
+- Remove Lsstcorp entirely.
 
----
+My choice: Keeping all rows.
 
-## D6 — Drop Priority from scoring
-Priority is null in 62% of stories.
+Reason: Dropping data is destructive. Capping introduces sampling bias. The smaller sample no longer represents the project. Letting the user toggle Lsstcorp on and off in the dashboard is the honest option. The user can see both views and judge the impact.
 
-**Decision:** Exclude Priority from quality framework.
-**Rationale:** Insufficient signal density. Including it would introduce noise rather than information.
+## D5. Keep stories with missing description
+
+About 4,067 stories have no description at all.
+
+My choice: Keep them in the dataset.
+
+Reason: A missing description is itself a sign of poor quality. If I drop these rows I am erasing the exact low quality records I want to measure. They will get a low quality score and they will contribute to a `missing_description` issue tag.
+
+## D6. Drop the Priority field from scoring
+
+The Priority column is empty in 62 percent of stories.
+
+My choice: Exclude Priority from the quality framework.
+
+Reason: There is not enough signal. A column with so many missing values adds noise instead of information.
+
+## D7. Native MySQL for now, Docker later
+
+Options I considered:
+- Native MySQL install on Windows. Quick to set up, MySQL Workbench (a graphical client) works out of the box.
+- Docker Compose. A way to describe a service in a small file and run it in an isolated container. Containers are like lightweight virtual machines. More portable, harder to set up the first time on Windows.
+
+My choice: Native MySQL for the current phase. Add Docker Compose later, after the main work is done.
+
+Reason: The point of this project is the data analytics work, not the infrastructure. The native install gets me to the data faster. Once the cleaning, scoring, and dashboards are in place I will add a `docker-compose.yml` so anyone can reproduce the setup with one command.
