@@ -99,3 +99,40 @@ I cite this framing once in the case study. It is not the methodological backbon
 | 04 Quality Framework | Lucassen (the 13 criteria define the score dimensions), Cohn (INVEST checks) |
 | 05 Rule based Scoring | Lucassen (AQUSA style rules), Cohn (Conditions of Satisfaction) |
 | 06 AI Scoring | Lucassen (LLM prompts grounded in QUS), Cohn (template grounding) |
+
+## 5. Yamani, Baslyman, Ahmed (2025). UStAI dataset, LLMs for user story generation.
+
+A recent empirical study that uses large language models to generate user stories and evaluates them with the QUS framework.
+
+- Title: *Leveraging LLMs for User Stories in AI Systems: UStAI Dataset*
+- Authors: Asma Yamani, Malak Baslyman, Moataz Ahmed
+- Conference: 21st International Conference on Predictive Models and Data Analytics in Software Engineering (PROMISE), Trondheim, Norway, 2025
+- DOI: https://doi.org/10.1145/3727582.3728689
+- Dataset: https://github.com/asmayamani/EthicsRequirementsData (1260 annotated user stories)
+
+What I take from it:
+
+- A working pipeline for using an LLM to score user stories on the 13 QUS criteria. This is the closest existing reference to what notebook 06 will do.
+- A public dataset of 1260 LLM-generated user stories annotated for quality, non-functional requirements (NFR), and ethical principles. Useful as a comparison point for the LLM-based scoring I will run on TAWOS.
+- Patterns of LLM failure modes that I should expect, such as non-atomic stories (multiple features stitched with "and"), missing reasons after "as a", and vague wording.
+- Confirmation that LLM-generated stories can be evaluated with QUS just like human-written ones, so the QUS framework can be applied across both human and LLM sources of user stories.
+
+How I will use it: as a methodological reference for notebook 06 prompts, as a check on the kinds of quality issues to look for in AI-generated text, and as a comparison dataset if I want to benchmark my own scoring against an existing labeled corpus.
+
+## 6. Zul, Yasin, Sahid (2025). Systematic literature review of user story quality frameworks.
+
+A systematic literature review that compares the frameworks used by other studies to evaluate user story quality.
+
+- Title: *User Story Quality Evaluation: Analyzing Frameworks and Application Methods*
+- Authors: Muhammad Ihsan Zul, Suhaila Mohd. Yasin, Dadang Syarif Sihabudin Sahid
+- Journal: ASEAN Engineering Journal, vol. 15, no. 4 (2025), pp. 115 to 123
+- DOI: https://doi.org/10.11113/aej.V15.24306
+
+Key findings I rely on:
+
+- Of the 26 studies reviewed, INVEST is the most used framework (11 studies) and QUS is the second most used (10 studies). This justifies my choice of these two frameworks as the backbone of notebook 04.
+- The authors extract 8 criteria that appear across multiple frameworks: Independent, Unambiguous, Complete, Estimable, Testable, Conflict free, Atomic, Negotiable. I will treat these as a minimum core set in the scoring framework.
+- AQUSA, the QUS-based tool from Lucassen et al. (2016), is still the most common automated tool five years later. This supports the decision to keep my rule-based scoring (notebook 05) aligned with AQUSA-style checks.
+- The review reports that generative AI is starting to appear in this space but is used in only one of the 26 studies. The Yamani et al. (2025) paper above is a recent example. This positions my notebook 06 in an active, under-explored area.
+
+How I will use it: as the literature-review backbone of the case study, to show that the framework choices (QUS plus INVEST) and the tooling choices (rule-based plus LLM-based) are consistent with the current state of the field.

@@ -206,3 +206,15 @@ This finding will become a per project metric in the dashboard, so a team can se
 - Do projects differ significantly in their average quality scores once we have computed them?
 - Do stories with longer resolution times have lower clarity scores?
 - Of the 540 duplicate rows, how many are tool glitches and how many are deliberate?
+
+### Finding 18. Explicit acceptance criteria are essentially absent from this dataset
+
+Only 228 stories (0.7 percent) contain an explicit acceptance criteria signal. The check looks for the literal phrase "acceptance criteria", the abbreviation "AC:", the Behavior Driven Development structure "GIVEN ... WHEN ... THEN", or markdown checklist markers like `- [ ]`.
+
+This is even rarer than the full Cohn template (1.0 percent, Finding 9).
+
+Reference for the importance of acceptance criteria: Mike Cohn's "Conditions of Satisfaction" and Ron Jeffries' "Confirmation" pillar of the three Cs (Card, Conversation, Confirmation).
+
+Interpretation: most teams in this dataset capture user stories as plain prose and rely on the team's shared understanding rather than written tests-of-done. From a QA perspective this is a serious gap. The team has no objective record of when a story is complete, which forces rework and ambiguity in sprint planning.
+
+Implication for the dashboard: a "missing acceptance criteria" tag will be one of the strongest weights in the quality score.
